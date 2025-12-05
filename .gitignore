@@ -1,0 +1,38 @@
+# ----------------------------------------------------
+# 1. Maven / Java Build Artifacts
+# ----------------------------------------------------
+target/
+*.jar
+*.war
+*.ear
+*.class
+# 避免上傳 Maven 產生的 dependency pom
+dependency-reduced-pom.xml
+
+# ----------------------------------------------------
+# 2. IDE Files (IntelliJ, VS Code, Eclipse)
+# ----------------------------------------------------
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+
+# ----------------------------------------------------
+# 3. Sensitive Configuration and Logs
+# ----------------------------------------------------
+
+application.properties
+application.yml
+
+# Log Files
+*.log
+logs/
+
+# ----------------------------------------------------
+# 4. OS Files
+# ----------------------------------------------------
+
+# Windows
+Thumbs.db
