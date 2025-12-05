@@ -11,7 +11,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
     // Spring Data JPA 會自動根據方法名稱解析出 SQL 查詢：
     // SELECT * FROM user_table WHERE account = ?
     Optional<User> findByAccount(String account);
-    //Optional<User>用於處理「找不到使用者」的情況，避免 NullPointerException
-
     
 }
+
+
+
+
