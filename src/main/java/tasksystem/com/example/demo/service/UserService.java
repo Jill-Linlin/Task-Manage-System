@@ -41,5 +41,20 @@ public class UserService {
     }
 
     //登入
+    public User loginUser(String Account,String Password){
+        Optional<User> foundUser = userRepository.findByAccount(Account);
+        if (foundUser.isEmpty()){
+            return null;
+        }//回傳null表示資料庫無使用者
+        User user=foundUser.get();//利用使用者帳號找到實體
+        //對照密碼(利用)
+        if (passwordEncoder.matches(Password, user.getPassword())){
+            return user;
+        }
+        else{
+            return null;
+        }
+        //回傳結果 
+    }
     
 }
