@@ -4,7 +4,7 @@ import java.util.Optional;
 // 1. 告訴 Spring 這是一個業務服務層組件
 import org.springframework.stereotype.Service;
 
-import tasksystem.com.example.demo.Entity.User;
+import tasksystem.com.example.demo.entity.User;
 import tasksystem.com.example.demo.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +56,10 @@ public class UserService {
         }
         //回傳結果 
     }
+
+    //查找使用者
+    //編輯使用者資料
+    //刪除使用者資料
+    
     
 }

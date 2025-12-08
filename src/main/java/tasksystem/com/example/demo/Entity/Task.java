@@ -1,7 +1,8 @@
-package tasksystem.com.example.demo.Entity;
+package tasksystem.com.example.demo.entity;
 import java.time.LocalDate;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name="task_table")
@@ -76,7 +77,7 @@ public class Task {
         return isDeleted;
     }
 
-    public void setIsDeleted(Boolean isDeleted) {
+    public void setDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 

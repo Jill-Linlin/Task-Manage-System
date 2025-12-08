@@ -1,4 +1,4 @@
-package tasksystem.com.example.demo.Entity;
+package tasksystem.com.example.demo.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

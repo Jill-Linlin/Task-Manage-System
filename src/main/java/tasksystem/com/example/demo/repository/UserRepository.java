@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import tasksystem.com.example.demo.Entity.User;
+import tasksystem.com.example.demo.entity.User;
 
 public interface UserRepository extends JpaRepository<User,Long> {
     // 根據帳號查找用戶（用於登入/註冊時檢查帳號是否已存在）
