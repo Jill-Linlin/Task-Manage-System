@@ -36,6 +36,10 @@ public class Task {
 
     public Task(){}
 
+     public void setId(Long taskId) {
+        this.id=taskId;
+    }
+
     public Long getId(){
         return id;
     }
@@ -96,4 +100,6 @@ public class Task {
     public void setUser(User user) {
         this.user = user;
     }
+
+   
 }

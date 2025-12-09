@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,16 +48,9 @@ public class TaskController {
     @GetMapping("/check")
     public ResponseEntity<?> checkTask(@RequestParam Long userId) {
         List<Task> taskList=taskservice.foundUserTasks(userId);
-        if (taskList.isEmpty()){
-             return ResponseEntity
-            .status(HttpStatus.OK)
-            .body("{\"message:\"\"It is Empty\"}"+taskList);
-        }
-        else{
-            return ResponseEntity
-            .status(HttpStatus.OK)
+        return ResponseEntity
+            .status(HttpStatus.OK)//200
             .body(taskList);
-        }
     }
     
     //更新任務
@@ -65,14 +59,40 @@ public class TaskController {
         Task updateTask=taskservice.updateTask(task);
         if(updateTask==null){
             return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("{\"message:\"\"Database didn't find this task or be deleted\"");
+                .status(HttpStatus.NOT_FOUND) //404
+                .body("{\"message\":\"Database didn't find this task or be deleted\"");
         }
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.OK)//201
                 .body(updateTask);
     }
     //刪除任務
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long taskId){
+        //創建只有ID的物件
+        Task taskToDel=new Task();
+        //物件傳給service
+        taskToDel.setId(taskId);//此物件不會被儲存只是為了id而暫存的物件
+
+        //呼叫service進行軟刪除
+        Task deletTask=taskservice.softDeleteTask(taskToDel);
+        
+        //刪除失敗(任務不存在)
+        if(deletTask==null){
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("{\"message\":\"Not Found\"");
+        }else{
+             //刪除成功
+            return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();//主體是空的
+        }
+
+       
+        
+    }
+
     
     
 

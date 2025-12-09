@@ -57,9 +57,38 @@ public class UserService {
         //回傳結果 
     }
 
-    //查找使用者
+    //查找使用者.
+    public User findByAccount(String Account){
+        Optional<User> foundUser = userRepository.findByAccount(Account);
+        if(foundUser.isPresent()){
+            User user=foundUser.get();
+            return user;
+        }else{
+            return null;
+        }
+    }
     //編輯使用者資料
+    public User updateUser(User user){
+        User userToUpdate=userRepository.findById(user.getId()).orElse(null);
+        if(userToUpdate==null){
+            return null;
+        }
+        userToUpdate.setBirth(user.getBirth());
+        userToUpdate.setName(user.getName());
+        userToUpdate.setSex(user.getSex());
+
+        return userRepository.save(userToUpdate);
+    }
     //刪除使用者資料
+    public boolean deleteUser(User user){
+        User userToDel=userRepository.findById(user.getId()).orElse(null);
+        if(userToDel==null){
+            return false;
+        }
+        userRepository.delete(userToDel);
+         
+        return true;
+    }
     
     
 }
