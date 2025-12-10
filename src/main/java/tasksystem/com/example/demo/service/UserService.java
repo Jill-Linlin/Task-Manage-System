@@ -3,22 +3,27 @@ import java.util.Optional;
 
 // 1. 告訴 Spring 這是一個業務服務層組件
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import tasksystem.com.example.demo.entity.User;
 import tasksystem.com.example.demo.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     //屬性
     private final UserRepository userRepository; //設定一個資料型態為UserRepository的變數(名稱 userRepository)
     private final BCryptPasswordEncoder passwordEncoder;
     //建構式
     @Autowired
-    public UserService(UserRepository userRepository,BCryptPasswordEncoder passwordEncoder)
+    public UserService (UserRepository userRepository,BCryptPasswordEncoder passwordEncoder)
     {
         this.userRepository=userRepository;
         this.passwordEncoder=passwordEncoder;
@@ -89,6 +94,20 @@ public class UserService {
          
         return true;
     }
+    // 【新增/修改】 核心方法：供 Spring Security 根據帳號名稱查找使用者
+    @Override
+    public UserDetails loadUserByUsername(String account) throws UsernameNotFoundException{
+        return userRepository.findByAccount(account)
+                            .orElseThrow(() ->
+                                new UsernameNotFoundException("not found user account "+account));
+    }
+    // 【新增】 供 JWT Filter 根據 ID 查找使用者（JWT 中只存 ID）
+    public UserDetails loadUserById(Long id)throws UsernameNotFoundException{
+        return userRepository.findById(id)
+                .orElseThrow(() ->
+                    new UsernameNotFoundException("not found user id "+ id));
+    }
+
     
     
 }

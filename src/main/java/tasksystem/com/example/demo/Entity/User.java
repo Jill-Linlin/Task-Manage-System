@@ -1,13 +1,19 @@
 package tasksystem.com.example.demo.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
 
 @Entity //JPA映射這是一個實體
 @Table(name="user_table")//對應table名稱為user_table
 
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)//會隨機生成一個遞增數字
     private Long id;//u-id
@@ -40,8 +46,10 @@ public class User {
     public Long getId() {
         return id;
     }
-    // 註：通常不提供 ID 的 Setter，因為 ID 是由資料庫自動生成的。
-    
+
+    public void setId(Long id){
+        this.id=id;
+    }
     // Account
     public String getAccount() {
         return account;
@@ -52,6 +60,7 @@ public class User {
     }
 
     // Password
+    @Override 
     public String getPassword() {
         return password;
     }
@@ -96,6 +105,36 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    @Override 
+    public Collection<? extends GrantedAuthority> getAuthorities(){
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+    //獲取權限
+    @Override
+    public String getUsername(){
+        return account;
+    }
+    //獲取帳號，利用account欄位作為UserName
+
+    @Override
+    public boolean isAccountNonExpired(){
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked(){
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired(){
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled(){
+        return true;
+    }
 
 
 }
