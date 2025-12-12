@@ -20,9 +20,11 @@ public class SecurityConfig {
 
     //step C才會實作Filter
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    
     @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter){
         this.jwtAuthenticationFilter=jwtAuthenticationFilter;
+    
     }
 
     // 1. 保留這個 Bean，供 UserService 注入

@@ -4,10 +4,16 @@ package tasksystem.com.example.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tasksystem.com.example.demo.entity.User;
+import tasksystem.com.example.demo.payload.JwtAuthenticationResponse;
+import tasksystem.com.example.demo.security.JwtTokenProvider;
 import tasksystem.com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,10 +32,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class UserController {
     //屬性
     private final UserService userservice;
+    private final JwtTokenProvider tokenProvider;
+    private final AuthenticationManager authenticationManager;
     //建構式
     @Autowired
-    public UserController(UserService userservice){
+    public UserController(UserService userservice,JwtTokenProvider tokenProvider,AuthenticationManager authenticationManager){
         this.userservice=userservice;
+        this.tokenProvider=tokenProvider;
+        this.authenticationManager=authenticationManager;
     }
     //方法
     //實作註冊API
@@ -53,17 +63,26 @@ public class UserController {
     //實作登入API
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody User user) {
-        User loginUser=userservice.loginUser(user.getAccount(), user.getPassword());
-        if (loginUser==null) {
-            return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body("{\"message\":\"此帳號不存在，或密碼輸入錯誤。\"}");
-            
-        }else{
-            return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body(loginUser);
+        try{
+            //使用 AuthenticationManager 進行認證
+            Authentication authentication=authenticationManager.authenticate(
+                // 傳遞使用者名稱（帳號）和密碼
+                new UsernamePasswordAuthenticationToken(user.getAccount(), user.getPassword())
+            );
+            // 2. 將認證結果設置到 Spring Security 上下文中
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 3. 從認證結果中獲取使用者的 ID
+            // UserDetails 實體就是您的 User 實體，我們可以直接轉換
+            User userDetails=(User)authentication.getPrincipal();
+            // 4. 使用 JwtTokenProvider 生成 Token
+            String jwt=tokenProvider.generateToken(userDetails.getId());
+            // 5. 返回包含 JWT 的 DTO，狀態碼使用 200 OK
+            return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
 
+        }catch(Exception ex){
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("{\"Message\":\"Invaild account or password.\"");
         }
     }
 

@@ -4,9 +4,11 @@ import java.io.IOException;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserService userService;
     
     @Autowired
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider,UserService userService){
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider,@Lazy UserService userService){
         this.tokenProvider=tokenProvider;
         this.userService=userService;//用來加載使用者數據
     }

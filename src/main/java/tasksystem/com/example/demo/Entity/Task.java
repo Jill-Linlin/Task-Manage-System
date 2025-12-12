@@ -29,11 +29,23 @@ public class Task {
 
     @Column(name="limited")
     private LocalDate limited;
-    
-    @ManyToOne
-    @JoinColumn(name="u_id")
-    private User user;
 
+    @Column(name="user_id", nullable = false)
+    private Long userId;
+
+    // @ManyToOne
+    // @JoinColumn(name="u_id")
+    // private User user;
+    /*
+ * 💡【安全與性能考量：JWT 專用外鍵】
+ * * 採用 Long userId 而非 User user 映射 (ManyToOne) 的原因：
+ * * 1. 性能優先：避免 JPA 的 N+1 查詢問題。在創建/查詢 Task 時，
+ * 不需要額外執行 SELECT 語句來載入完整的 User 物件，直接操作 ID 速度更快。
+ * 2. 安全簡潔：JWT 認證流程中，Security Context Holder 直接提供 Long userId。
+ * 使用 Long 類型可直接綁定，是處理權限驗證和數據隔離的最佳選擇。
+ * 3. 數據隔離：用於 TaskService 中，檢查 Task.userId 是否等於當前登入者 ID，
+ * 確保每個用戶只能存取自己的數據。
+ */
     public Task(){}
 
      public void setId(Long taskId) {
@@ -93,13 +105,18 @@ public class Task {
         this.limited = limited;
     }
 
-    public User getUser() {
-        return user;
-    }
+    // public User getUser() {
+    //     return user;
+    // }
 
-    public void setUser(User user) {
-        this.user = user;
+    // public void setUser(User user) {
+    //     this.user = user;
+    // }
+    public Long getUserID(){
+        return userId;
     }
-
+    public void setUserId(Long userId){
+        this.userId=userId;
+    }
    
 }
