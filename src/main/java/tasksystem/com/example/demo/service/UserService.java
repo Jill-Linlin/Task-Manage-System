@@ -3,13 +3,13 @@ import java.util.Optional;
 
 // 1. 告訴 Spring 這是一個業務服務層組件
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import tasksystem.com.example.demo.entity.User;
 import tasksystem.com.example.demo.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

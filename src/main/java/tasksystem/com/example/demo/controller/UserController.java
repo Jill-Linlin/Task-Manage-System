@@ -11,12 +11,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import tasksystem.com.example.demo.entity.User;
 import tasksystem.com.example.demo.payload.JwtAuthenticationResponse;
 import tasksystem.com.example.demo.security.JwtTokenProvider;
 import tasksystem.com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 @RequestMapping("api/users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
     //屬性
     private final UserService userservice;
@@ -44,19 +47,18 @@ public class UserController {
     //方法
     //實作註冊API
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
         User registerUser=userservice.registUser(user);
         if(registerUser==null){
             return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body("{\"message\":\"此帳號已經存在，請使用其他帳號註冊。\"}");
 
-        }else{
-            return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(registerUser);
-
         }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerUser);
+
+        
     }
     
 

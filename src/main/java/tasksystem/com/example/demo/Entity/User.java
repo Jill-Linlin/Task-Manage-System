@@ -9,6 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity //JPA映射這是一個實體
 @Table(name="user_table")//對應table名稱為user_table
@@ -21,6 +23,19 @@ public class User implements UserDetails {
     @Column(name = "account",nullable = false,unique = true)//帳號獨一且不可為空
     private String account;
 
+    @NotBlank(message="Password is not empty.")
+    @Pattern(
+        //^:字串開頭
+        //(?=.*[0-9]):至少包含一個數字
+        //(?=.*[a-z]):至少包含一個小寫英文
+        //(?=.*[A-Z]):至少包含一個大寫英文
+        //(?=.*[@#$%^&+=!]):至少包含一個特殊符號
+        //(?=\S+$):不允許有空白字元
+        //.{8.20}長度8-20
+        //$:字串結尾
+        regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8.20}$",
+        message = "密碼規範不符：需包含大小寫英文、數字及特殊符號.長度8-20位,且不可包含空白或中文"
+    )
     @Column(name="password",nullable = false)//password之後要有hash
     private String password;
 
