@@ -64,6 +64,7 @@ public class TaskService {
     existingTask.setDescription(updatedTask.getDescription());
     existingTask.setCategory(updatedTask.getCategory());
     existingTask.setLimited(updatedTask.getLimited());
+    existingTask.setCompleted(updatedTask.isCompleted());
     
     // 3. 儲存並返回
     return taskRepository.save(existingTask);

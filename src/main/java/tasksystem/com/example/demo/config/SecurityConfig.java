@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,6 +12,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 import tasksystem.com.example.demo.security.JwtAuthenticationFilter;
 
@@ -42,8 +49,8 @@ public class SecurityConfig {
     // 3. 配置安全過濾鏈：定義哪些 URL 需要保護，哪些是公開的
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        
         http
+            .cors(Customizer.withDefaults())//會去尋找一個名稱為 corsConfigurationSource 的 Bean
             .csrf(csrf -> csrf.disable()) // // 禁用 CSRF：因為我們是 RESTful API 並使用 JWT，所以不需要 CSRF 保護
 
             // 設定 Session 管理策略為 STATELESS (無狀態)
@@ -65,5 +72,29 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+    
+        // 1. 允許的來源：必須明確指定為 Vite 的 5173
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+    
+    // 2. 允許的 HTTP 方法
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    
+    // 3. 允許的 Header：這點最關鍵！因為你的前端會帶 Authorization
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+    
+    // 4. 允許攜帶憑證 (如 Cookie/Auth Header)
+        configuration.setAllowCredentials(true);
+    
+    // 5. 讓瀏覽器可以讀取到的 Response Header
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 套用到所有 API
+        return source;
     }
 }

@@ -21,7 +21,7 @@ public class Task {
     private String category;
 
     @Column(name="completed")
-    private Boolean completed;
+    private Boolean completed=false;
 
     // 改成駝峰式命名
     @Column(name="isdeleted")  // 資料庫欄位名稱保持不變

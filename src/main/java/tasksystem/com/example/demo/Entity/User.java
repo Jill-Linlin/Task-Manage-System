@@ -33,7 +33,7 @@ public class User implements UserDetails {
         //(?=\S+$):不允許有空白字元
         //.{8.20}長度8-20
         //$:字串結尾
-        regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8.20}$",
+        regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,20}$",
         message = "密碼規範不符：需包含大小寫英文、數字及特殊符號.長度8-20位,且不可包含空白或中文"
     )
     @Column(name="password",nullable = false)//password之後要有hash

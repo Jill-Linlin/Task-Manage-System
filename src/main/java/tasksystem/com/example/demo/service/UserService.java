@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -72,9 +73,13 @@ public class UserService implements UserDetailsService {
             return null;
         }
     }
+
+  
+  
     //編輯使用者資料
-    public User updateUser(User user){
-        User userToUpdate=userRepository.findById(user.getId()).orElse(null);
+    public User updateUser(String Account ,User user,PasswordEncoder passwordEncoder){
+
+        User userToUpdate=userRepository.findByAccount(Account).orElse(null);
         if(userToUpdate==null){
             return null;
         }
@@ -82,6 +87,12 @@ public class UserService implements UserDetailsService {
         userToUpdate.setName(user.getName());
         userToUpdate.setSex(user.getSex());
 
+        if(user.getPassword()!=null&&!user.getPassword().trim().isEmpty()) {
+            String encodedPassword=passwordEncoder.encode(user.getPassword());
+            userToUpdate.setPassword(encodedPassword);
+            
+        }
+       
         return userRepository.save(userToUpdate);
     }
     //刪除使用者資料

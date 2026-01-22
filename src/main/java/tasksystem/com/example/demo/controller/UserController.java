@@ -8,6 +8,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +47,9 @@ public class UserController {
         this.tokenProvider=tokenProvider;
         this.authenticationManager=authenticationManager;
     }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     //方法
     //實作註冊API
     @PostMapping("/register")
@@ -90,7 +96,7 @@ public class UserController {
 
     //查找User
     @GetMapping("/finduser")
-    public ResponseEntity findUser(@RequestParam String account) {
+    public ResponseEntity<?> findUser(@RequestParam String account) {
         User user=userservice.findByAccount(account);
         if(user==null){
             return ResponseEntity
@@ -102,12 +108,27 @@ public class UserController {
                 .body(user);
         }
     }
+    @GetMapping("/userdata")
+    public ResponseEntity<?> getuserdata(@AuthenticationPrincipal UserDetails userDetails) {
+        String username=userDetails.getUsername();
+        User user=userservice.findByAccount(username);
+        if(user==null){
+            return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body("{\"message\":\"此帳號不存在。\"}");
+        }else{
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(user);
+        }
+    }
+    
     
 
     //更新User
-    @PutMapping("update/{userid}")
-    public ResponseEntity updateUser(@PathVariable Long userId, @RequestBody User user) {
-        User userToUpdate=userservice.updateUser(user);
+    @PutMapping("/update")
+    public ResponseEntity updateUser(@AuthenticationPrincipal UserDetails userDetails, @RequestBody User user) {
+        User userToUpdate=userservice.updateUser(userDetails.getUsername(),user,passwordEncoder);
         if(userToUpdate==null){
             return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -120,7 +141,7 @@ public class UserController {
     }
 
     //刪除user
-    @PutMapping("delete/{userid}")
+    @PutMapping("/delete/{userid}")
     public ResponseEntity deleteUser(@RequestBody User user) {
         Boolean userToDel=userservice.deleteUser(user);
         if (userToDel==true) {
