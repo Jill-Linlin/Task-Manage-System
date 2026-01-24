@@ -4,7 +4,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # 第二階段：運行
-FROM openjdk:17-jdk-slim
+FROM amazoncorretto:17-alpine
 COPY --from=build /target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
