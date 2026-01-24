@@ -16,7 +16,7 @@ public class JwtTokenProvider {
     private String jwtSecret; 
     //密鑰字串
     @Value("${app.jwt.expiration-ms}")
-    private int jwtExpirationMs;
+    private long jwtExpirationMs;
     //讀取有效期(ms)
 
     //Key物件是加密/解密的核心
